@@ -4,25 +4,28 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../source/FSK.c \
+../source/DAC.c \
 ../source/SysTick.c \
 ../source/gpio.c \
 ../source/template.c \
-../source/timer.c 
+../source/timer.c \
+../source/uart_fsk.c 
 
 OBJS += \
-./source/FSK.o \
+./source/DAC.o \
 ./source/SysTick.o \
 ./source/gpio.o \
 ./source/template.o \
-./source/timer.o 
+./source/timer.o \
+./source/uart_fsk.o 
 
 C_DEPS += \
-./source/FSK.d \
+./source/DAC.d \
 ./source/SysTick.d \
 ./source/gpio.d \
 ./source/template.d \
-./source/timer.d 
+./source/timer.d \
+./source/uart_fsk.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

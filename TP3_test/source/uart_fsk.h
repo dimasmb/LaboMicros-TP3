@@ -1,11 +1,11 @@
 /***************************************************************************//**
-  @file     FSK.h
+  @file     uart_fsk.h
   @brief    Funciones para modular FSK
   @author   Dimas Bosch
  ******************************************************************************/
 
-#ifndef _FSK_H_
-#define _FSK_H_
+#ifndef _UART_FSK_H_
+#define _UART_FSK_H_
 
 /*******************************************************************************
  * INCLUDE HEADER FILES
@@ -22,15 +22,6 @@
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
-typedef struct
-{
-  uint16_t stop     :1;
-  uint16_t parity   :1;
-  uint16_t data     :8;
-  uint16_t start    :1;
-  uint16_t none     :5;
-}FSK_t;
-
 
 
 /*******************************************************************************
@@ -45,11 +36,11 @@ typedef struct
  ******************************************************************************/
 
 /**
- * @brief TODO: arma bitfield con start, datos (8 bits), parity bit (odd) y stop acorde con la modulacion FSK
- * @param uart_str string de 8 chars recibido por uart
+ * @brief TODO: Devuelve un 16 bits donde los 11LSB (0000 0SDD DDDD DDPT) 8-Odd-1 con lo datos en LSB first
+ * @param datos char recibido por uart
  * @return Estructura FSK_t correspondiente
 */
-FSK_t FSK_modulation(char* uart_str);
+uint16_t uart_2_fsk(uint8_t datos);
 
 
 /*******************************************************************************
