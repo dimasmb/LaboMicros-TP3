@@ -1,10 +1,12 @@
-SDK/startup/main.o SDK/startup/main.d: ../SDK/startup/main.c \
+source/FTM.o source/FTM.d: ../source/FTM.c ../source/FTM.h \
  ../SDK/startup/hardware.h ../SDK/CMSIS/fsl_device_registers.h \
  ../SDK/CMSIS/MK64F12.h ../SDK/CMSIS/core_cm4.h \
  ../SDK/CMSIS/cmsis_version.h ../SDK/CMSIS/cmsis_compiler.h \
  ../SDK/CMSIS/cmsis_gcc.h ../SDK/CMSIS/system_MK64F12.h \
- ../SDK/CMSIS/MK64F12_features.h ../SDK/CMSIS/core_cm4.h \
- ../source/uart_fsk.h ../source/FTM.h ../SDK/startup/hardware.h
+ ../SDK/CMSIS/MK64F12_features.h ../SDK/CMSIS/core_cm4.h ../source/gpio.h \
+ ../SDK/CMSIS/MK64F12.H
+
+../source/FTM.h:
 
 ../SDK/startup/hardware.h:
 
@@ -26,8 +28,6 @@ SDK/startup/main.o SDK/startup/main.d: ../SDK/startup/main.c \
 
 ../SDK/CMSIS/core_cm4.h:
 
-../source/uart_fsk.h:
+../source/gpio.h:
 
-../source/FTM.h:
-
-../SDK/startup/hardware.h:
+../SDK/CMSIS/MK64F12.H:

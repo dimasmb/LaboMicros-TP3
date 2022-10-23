@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../source/DAC.c \
+../source/FTM.c \
 ../source/SysTick.c \
 ../source/gpio.c \
 ../source/template.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 
 OBJS += \
 ./source/DAC.o \
+./source/FTM.o \
 ./source/SysTick.o \
 ./source/gpio.o \
 ./source/template.o \
@@ -21,6 +23,7 @@ OBJS += \
 
 C_DEPS += \
 ./source/DAC.d \
+./source/FTM.d \
 ./source/SysTick.d \
 ./source/gpio.d \
 ./source/template.d \

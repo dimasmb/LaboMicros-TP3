@@ -1,8 +1,33 @@
+/***************************************************************************//**
+  @file     +Nombre del archivo (ej: template.h)+
+  @brief    +Descripcion del archivo+
+  @author   +Nombre del autor (ej: Salvador Allende)+
+ ******************************************************************************/
 
-#ifndef SOURCES_FTM_H_
-#define SOURCES_FTM_H_
+#ifndef _FTM_H_
+#define _FTM_H_
+/*******************************************************************************
+ * INCLUDE HEADER FILES
+ ******************************************************************************/
 
 #include "hardware.h"
+
+/*******************************************************************************
+ * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
+ ******************************************************************************/
+
+#define FTM_CH_0 0
+#define FTM_CH_1 1
+#define FTM_CH_2 2
+#define FTM_CH_3 3
+#define FTM_CH_4 4
+#define FTM_CH_5 5
+#define FTM_CH_6 6
+#define FTM_CH_7 7
+
+/*******************************************************************************
+ * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
+ ******************************************************************************/
 
 typedef enum
 {
@@ -52,35 +77,38 @@ typedef enum
 
 } FTM_Prescal_t;
 
-
-
-
-
-
-#define FTM_CH_0 0
-#define FTM_CH_1 1
-#define FTM_CH_2 2
-#define FTM_CH_3 3
-#define FTM_CH_4 4
-#define FTM_CH_5 5
-#define FTM_CH_6 6
-#define FTM_CH_7 7
-
-
-
-
-
-
 typedef FTM_Type *FTM_t;
 typedef uint16_t FTMData_t;
 typedef uint32_t FTMChannel_t; /* FTM0/FTM3: Channel 1-8; FTM1/FTM2: Channel 1-2 */
+
+typedef struct
+{
+	FTM_t ftm;
+	FTMModule_t ftm_num;
+	FTMChannel_t channel;
+	FTM_Prescal_t prescale;
+	FTMMode_t mode;
+	FTMData_t modulus;
+	FTMData_t init_counter;
+	FTMEdge_t edge;
+	FTMEffect_t effect;
+	FTMLogic_t logic;
+} FTMConfig_t;
+
+/*******************************************************************************
+ * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
+ ******************************************************************************/
+
+/*******************************************************************************
+ * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
+ ******************************************************************************/
 
 //__ISR__ 	FTM0_IRQHandler					 (void);
 //__ISR__ 	FTM1_IRQHandler					 (void);
 //__ISR__ 	FTM2_IRQHandler					 (void);
 //__ISR__ 	FTM3_IRQHandler					 (void);
 
-void 		FTM_Init 						 (FTMModule_t module, FTMMode_t mode);
+void 		FTM_Init 						 (FTMModule_t module, FTMMode_t mode, int channel);
 
 void        FTM_SetPrescaler 				 (FTM_t, FTM_Prescal_t);
 void     	FTM_SetModulus 					 (FTM_t, FTMData_t);
@@ -108,5 +136,8 @@ FTMData_t   FTM_GetCounter 					 (FTM_t, FTMChannel_t);
 void 		FTM_SetInterruptMode   			 (FTM_t, FTMChannel_t, bool);
 bool 		FTM_IsInterruptPending 			 (FTM_t, FTMChannel_t);
 void 		FTM_ClearInterruptFlag 			 (FTM_t, FTMChannel_t);
+
+/*******************************************************************************
+ ******************************************************************************/
 
 #endif
