@@ -4,7 +4,10 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../source/BufferCirc.c \
 ../source/DAC.c \
+../source/FIR.c \
+../source/FSK.c \
 ../source/SysTick.c \
 ../source/gpio.c \
 ../source/template.c \
@@ -12,7 +15,10 @@ C_SRCS += \
 ../source/uart_fsk.c 
 
 OBJS += \
+./source/BufferCirc.o \
 ./source/DAC.o \
+./source/FIR.o \
+./source/FSK.o \
 ./source/SysTick.o \
 ./source/gpio.o \
 ./source/template.o \
@@ -20,7 +26,10 @@ OBJS += \
 ./source/uart_fsk.o 
 
 C_DEPS += \
+./source/BufferCirc.d \
 ./source/DAC.d \
+./source/FIR.d \
+./source/FSK.d \
 ./source/SysTick.d \
 ./source/gpio.d \
 ./source/template.d \

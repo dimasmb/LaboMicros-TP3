@@ -28,7 +28,7 @@ bool SysTick_Init (void (*funcallback)(void))
 	if (!yaInit)
 	{
 		SYSTICK->CTRL = 0x00;
-		SYSTICK->LOAD = 100000L - 1;		//1ms @ 100Mhz
+		SYSTICK->LOAD = 3470L - 1;		//26us @ 100Mhz
 		SYSTICK->VAL = 0x00;
 		SYSTICK->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk|SysTick_CTRL_ENABLE_Msk;
 		callback=funcallback;

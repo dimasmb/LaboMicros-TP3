@@ -4,7 +4,7 @@
 #define DAC_DATL_DATA0_WIDTH 8
 
 
-DAC_Type DAC;
+
 
 void DAC_Init (void)
 {
