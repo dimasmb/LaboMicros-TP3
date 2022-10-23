@@ -85,6 +85,12 @@ void Start_conv(void);
  */
 bool Conver_Complete(void);
 
+/**
+ * @brief es similar a ADC_Data, pero cuando llamamos a ésta, nos ahorramos llamar Start_Conv
+ * @return Devuelve la conversion
+ */
+uint16_t ADC_Read(void);
+
 void Clear_interrup_flag(void);
 /*******************************************************************************
  ******************************************************************************/

@@ -37,6 +37,10 @@ bool Conver_Complete(void){
 	return ADC1->SC1[0]&ADC_SC1_COCO_MASK;	//1  si esta libre
 }
 
+uint16_t ADC_Read(void){
+	Start_conv();
+	return ADC_Data();
+}
 
 /***************************/
 void Clock_Gatting_Enable(void){
