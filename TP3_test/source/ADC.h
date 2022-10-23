@@ -24,7 +24,6 @@
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
-//ofrecer una buena estructura para el usario.
 
 typedef enum
 {
@@ -65,18 +64,21 @@ typedef struct
  ******************************************************************************/
 
 /**
- * @brief Configures the specified pin to behave either as an input or an output
- * @param pin the pin whose mode you wish to set (according PORTNUM2PIN)
- * @param mode INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.
+ * @brief Se inicializa las configuracines basicas del ADC1.
+ * @adc se le pasan a traves de adc, los paramentros mas importantes ,como el modo ,source clock, etc.
  */
 void ADC_Init(adc_t adc);
 
+/**
+ * @brief Permite obtener lo datos que cuantificados por el adc.
+ */
 uint16_t ADC_Data(void);
 
 /**
- * @brief Se usa para la conversion continua, en la que captura un nuevo valor cada vez q modifiquemos un valor del SC1.
+ * @brief Se usa para la conversion continua, en la que captura un nuevo valor cada vez q actualizamos  SC1.
  */
 void Start_conv(void);
+
 /**
  * @brief Verifica el flag coco de SC1, con el fin de saber el estado de la conversion.
  * @return Devuelve 1 si la conversion esta completa, y esta libre para una nueva.

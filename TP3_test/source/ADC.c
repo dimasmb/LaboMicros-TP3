@@ -68,9 +68,10 @@ void Config_CFG2(adc_t adc){
 }
 void Config_SC1(adc_t adc){
 	uint32_t SC1=0b00000000000000000000000000010010;
+	//uint32_t SC1=0b00000000000000000000000000011111;
 	ADC1->SC1[0]=SC1;
 
-	//SC1&=~ADC_SC1_ADCH(10010); //elijo channel DP0
+	//SC1|=ADC_SC1_ADCH(34); //elijo channel DP0
 	//SC1=0;
 	SC1&=~ADC_SC1_DIFF(1);
 	if(adc.e_interrup==true){
