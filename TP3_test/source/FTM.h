@@ -83,9 +83,6 @@ typedef uint32_t FTMChannel_t; /* FTM0/FTM3: Channel 1-8; FTM1/FTM2: Channel 1-2
 
 typedef struct
 {
-	FTM_t ftm;
-	FTMModule_t ftm_num;
-	FTMChannel_t channel;
 	FTM_Prescal_t prescale;
 	FTMMode_t mode;
 	FTMData_t modulus;
@@ -94,6 +91,14 @@ typedef struct
 	FTMEffect_t effect;
 	FTMLogic_t logic;
 } FTMConfig_t;
+
+typedef struct
+{
+	uint16_t* duty_arr;
+	uint16_t cant;
+	uint16_t indice;
+	uint16_t step;
+} PWMGuide_t;
 
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
@@ -108,7 +113,7 @@ typedef struct
 //__ISR__ 	FTM2_IRQHandler					 (void);
 //__ISR__ 	FTM3_IRQHandler					 (void);
 
-void 		FTM_Init 						 (FTMModule_t module, FTMMode_t mode, int channel);
+void 		FTM_Init 						 (FTMModule_t, FTMChannel_t, FTMConfig_t);
 
 void        FTM_SetPrescaler 				 (FTM_t, FTM_Prescal_t);
 void     	FTM_SetModulus 					 (FTM_t, FTMData_t);
@@ -137,6 +142,9 @@ void 		FTM_SetInterruptMode   			 (FTM_t, FTMChannel_t, bool);
 bool 		FTM_IsInterruptPending 			 (FTM_t, FTMChannel_t);
 void 		FTM_ClearInterruptFlag 			 (FTM_t, FTMChannel_t);
 
+
+void FTM_SetPWMGuide(FTMModule_t, FTMChannel_t, PWMGuide_t);
+void FTM_SetPWMGuideStep(FTMModule_t, FTMChannel_t, uint16_t);
 /*******************************************************************************
  ******************************************************************************/
 

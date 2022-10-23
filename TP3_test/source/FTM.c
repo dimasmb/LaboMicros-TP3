@@ -9,7 +9,6 @@
  ******************************************************************************/
 
 #include "FTM.h"
-// #include "PORT.h"
 #include "gpio.h"
 
 /*******************************************************************************
@@ -48,11 +47,11 @@ enum{
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-void CH_Init(FTMModule_t ftm, int channel);
-void IC_Init(FTM_t ftm, int channel);
-void OC_Init(FTM_t ftm, int channel);
-void PWM_Init(FTM_t ftm, int channel);
-void PWM_ISR(void);
+void CH_Init(FTMModule_t, FTMChannel_t);
+void IC_Init(FTM_t, FTMChannel_t, FTMConfig_t);
+void OC_Init(FTM_t, FTMChannel_t, FTMConfig_t);
+void PWM_Init(FTM_t, FTMChannel_t, FTMConfig_t);
+void PWM_ISR (FTM_t, FTMModule_t, FTMChannel_t);
 
 /*******************************************************************************
  * ROM CONST VARIABLES WITH FILE LEVEL SCOPE
@@ -61,9 +60,9 @@ void PWM_ISR(void);
 /*******************************************************************************
  * STATIC VARIABLES AND CONST VARIABLES WITH FILE LEVEL SCOPE
  ******************************************************************************/
-
-static uint16_t PWM_modulus = 10000-1;
-static uint16_t PWM_duty    = 1000;
+static PWMGuide_t pwm_guide[4][4];	//[FTMn][CHn]
+static uint16_t PWM_modulus = 1000-1;
+static uint16_t PWM_duty    = 100;
 
 /*******************************************************************************
  *******************************************************************************
@@ -74,7 +73,7 @@ static uint16_t PWM_duty    = 1000;
 /*******************************
  * INICIALIZADOR GLOBAL
 *****************************/
-void FTM_Init (FTMModule_t module, FTMMode_t mode, int channel)
+void FTM_Init (FTMModule_t module, FTMChannel_t channel, FTMConfig_t config)
 {
 	static FTM_t mod;
 	switch (module)
@@ -114,18 +113,18 @@ void FTM_Init (FTMModule_t module, FTMMode_t mode, int channel)
 
 	CH_Init(module, channel);
 
-	switch(mode)
+	switch(config.mode)
 	{
 		case FTM_mInputCapture:
-			IC_Init(mod, channel);
+			IC_Init(mod, channel, config);
 			break;
 		case FTM_mOutputCompare:
-			OC_Init(mod, channel);
+			OC_Init(mod, channel, config);
 			break;
 		case FTM_mPulseWidthModulation:
-			PWM_Init(mod, channel);
+			pwm_guide[module][channel].cant = 0;
+			PWM_Init(mod, channel, config);
 			break;
-
 	}
 }
 
@@ -257,18 +256,24 @@ void FTM_ClearInterruptFlag (FTM_t ftm, FTMChannel_t channel)
 	ftm->CONTROLS[channel].CnSC &= ~FTM_CnSC_CHF_MASK;
 }
 
+void FTM_SetPWMGuide(FTMModule_t module, FTMChannel_t channel, PWMGuide_t guide)
+{
+	pwm_guide[module][channel] = guide;
+}
+
+void FTM_SetPWMGuideStep(FTMModule_t module, FTMChannel_t channel, uint16_t step)
+{
+	pwm_guide[module][channel].step = step;
+}
 /*******************************************************************************
  *******************************************************************************
                         LOCAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-/****************************
- * HANDLERS DE INTERRUPCIONES
-************************/
 /**********************************
 * INICIALIZADORES
 ******************/
-void CH_Init(FTMModule_t ftm, int channel)
+void CH_Init(FTMModule_t ftm, FTMChannel_t channel)
 {
 	int port;
 	int pin;
@@ -368,13 +373,13 @@ void CH_Init(FTMModule_t ftm, int channel)
 	}
 }
 
-void PWM_Init (FTM_t ftm, int channel)
+void PWM_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
-	//Prescaler: Bus clock (50MHz)/32
-	FTM_SetPrescaler(ftm, FTM_PSC_x16);
+	//Prescaler: Bus clock (50MHz)/4
+	FTM_SetPrescaler(ftm, config.prescale);//FTM_PSC_x4);
 
 	//Initial value = 0 ; counter = 0 (inicializo) ; max_cont = PWM_modulus
-	FTM_SetModulus(ftm, PWM_modulus);
+	FTM_SetModulus(ftm, config.modulus);// PWM_modulus);
 
 	//Habilito interrupciones de overflow
 	FTM_SetOverflowMode(ftm, true);
@@ -383,16 +388,16 @@ void PWM_Init (FTM_t ftm, int channel)
 	FTM_SetWorkingMode(ftm, channel, FTM_mPulseWidthModulation);			// MSA  / B
 
 	//High-true pulses (clear Output on match)
-	FTM_SetPulseWidthModulationLogic(ftm, channel, FTM_lAssertedHigh);   // ELSA / B
+	FTM_SetPulseWidthModulationLogic(ftm, channel, config.edge);//FTM_lAssertedHigh);   // ELSA / B
 
 	//"comparator" value = PWM_duty (donde hace el clear)
-	FTM_SetCounter(ftm, channel, PWM_duty);
+	FTM_SetCounter(ftm, channel, (FTMData_t)(config.modulus/2));
 
 	//Inicio el clock
 	FTM_StartClock(ftm);
 }
 
-void OC_Init (FTM_t ftm, int channel)
+void OC_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
 
 	//  Set up timer for OC interrupt
@@ -418,7 +423,7 @@ void OC_Init (FTM_t ftm, int channel)
 	FTM_StartClock(ftm); //Select BusClk
 }
 
-void IC_Init (FTM_t ftm, int channel)
+void IC_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
 	
 	//  Enable Timer advanced modes (FTMEN=1)
@@ -436,6 +441,10 @@ void IC_Init (FTM_t ftm, int channel)
 	FTM_StartClock(ftm);                                  // Select BusClk
 }
 
+/****************************
+ * HANDLERS DE INTERRUPCIONES
+************************/
+
 /* FTM0 fault, overflow and channels interrupt handler*/
 __ISR__ FTM0_IRQHandler(void)
 {
@@ -443,20 +452,28 @@ __ISR__ FTM0_IRQHandler(void)
 	//chequear que flag se prendio (OVF o channel)
 	//bajar el flag
 	//operar
-	PWM_ISR();
+	PWM_ISR(FTM0, FTM_0, 0);
 }
 
-void PWM_ISR (void)
+void PWM_ISR (FTM_t ftm, FTMModule_t module, FTMChannel_t channel)
 {
-	if(FTM_IsOverflowPending (FTM0))
+	static PWMGuide_t guide;
+	guide = pwm_guide[module][channel];
+	if(FTM_IsOverflowPending (ftm))
 	{
-		FTM_ClearOverflowFlag(FTM0);
+		FTM_ClearOverflowFlag(ftm);
 
-		FTM_SetCounter(FTM0, 0, PWM_duty);  //change DC
-		//gpioToggle(PORTNUM2PIN(PC, 8));			  //GPIO pin PTC8
-		//int a = FTM_GetCounter(FTM0, 0);
-		PWM_duty++;
-		PWM_duty %= PWM_modulus;
+		// FTM_SetCounter(FTM0, 0, PWM_duty);  //change DC
+		// //PWM_duty debería leer desde un arreglo con los valores que corresponden
+		// PWM_duty++;
+		// PWM_duty %= PWM_modulus;
+
+		if(guide.cant)
+		{
+			guide.indice %= guide.cant;
+			FTM_SetCounter(ftm, channel, guide.duty_arr[guide.indice]);
+			pwm_guide[module][channel].indice += guide.step;
+		}
 
 	}
 }
