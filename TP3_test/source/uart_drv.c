@@ -33,7 +33,9 @@ void UART_Init (int baudrate, char parity){
 	PORTB->PCR[UART0_TX_PIN]|=PORT_PCR_MUX(3); //Set MUX to UART0
 	PORTB->PCR[UART0_TX_PIN]|=PORT_PCR_IRQC(0); //Disable Port interrupts
 
-
+	PORTA->PCR[2] = 0X0;
+	PORTA->PCR[2] |= PORT_PCR_MUX(2);
+	PORTA->PCR[2]|= PORT_PCR_IRQC(0);
 	UART_SetBaudRate(UART0, baudrate);
 
 	//Habilitamos UART como transmisor
@@ -41,9 +43,11 @@ void UART_Init (int baudrate, char parity){
 
 	if(parity){
 		if (parity==1){
+			UART0->C1 |= UART_C1_M_MASK;
 			UART0->C1 |= (UART_C1_PE_MASK);
 		}
 		else {
+			UART0->C1 |= UART_C1_M_MASK;
 			UART0->C1 |= (UART_C1_PE_MASK);
 			UART0->C1 |= UART_C1_PT(1);
 		}
