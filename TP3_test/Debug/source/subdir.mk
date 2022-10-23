@@ -6,8 +6,12 @@
 C_SRCS += \
 ../source/BufferCirc.c \
 ../source/DAC.c \
+<<<<<<< HEAD
 ../source/FIR.c \
 ../source/FSK.c \
+=======
+../source/FTM.c \
+>>>>>>> master
 ../source/SysTick.c \
 ../source/gpio.c \
 ../source/template.c \
@@ -17,8 +21,12 @@ C_SRCS += \
 OBJS += \
 ./source/BufferCirc.o \
 ./source/DAC.o \
+<<<<<<< HEAD
 ./source/FIR.o \
 ./source/FSK.o \
+=======
+./source/FTM.o \
+>>>>>>> master
 ./source/SysTick.o \
 ./source/gpio.o \
 ./source/template.o \
@@ -28,8 +36,12 @@ OBJS += \
 C_DEPS += \
 ./source/BufferCirc.d \
 ./source/DAC.d \
+<<<<<<< HEAD
 ./source/FIR.d \
 ./source/FSK.d \
+=======
+./source/FTM.d \
+>>>>>>> master
 ./source/SysTick.d \
 ./source/gpio.d \
 ./source/template.d \
