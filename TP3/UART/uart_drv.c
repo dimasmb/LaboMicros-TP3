@@ -33,6 +33,10 @@ void UART_Init (int baudrate, char parity){
 	PORTB->PCR[UART0_TX_PIN]|=PORT_PCR_MUX(3); //Set MUX to UART0
 	PORTB->PCR[UART0_TX_PIN]|=PORT_PCR_IRQC(0); //Disable Port interrupts
 
+	PORTB->PCR[UART0_RX_PIN]=0x0; //Clear all bits
+	PORTB->PCR[UART0_RX_PIN]|=PORT_PCR_MUX(3); //Set MUX to UART0
+	PORTB->PCR[UART0_RX_PIN]|=PORT_PCR_IRQC(0); //Disable Port interrupts
+
 	PORTA->PCR[2] = 0X0;
 	PORTA->PCR[2] |= PORT_PCR_MUX(2);
 	PORTA->PCR[2]|= PORT_PCR_IRQC(0);
@@ -53,6 +57,10 @@ void UART_Init (int baudrate, char parity){
 		}
 
 	}
+	NVIC_EnableIRQ(UART0_RX_TX_IRQn);
+	NVIC_SetPriority(UART0_RX_TX_IRQn,0);
+	NVIC_EnableIRQ(UART0_ERR_IRQn);
+	NVIC_SetPriority(UART0_ERR_IRQn,0);
 
 }
 
@@ -60,15 +68,13 @@ void UART_Init (int baudrate, char parity){
 
 
 void enable_UART_int(){
-	NVIC_EnableIRQ(UART0_RX_TX_IRQn);
-	NVIC_SetPriority(UART0_RX_TX_IRQn,0);
-	NVIC_EnableIRQ(UART0_ERR_IRQn);
-	NVIC_SetPriority(UART0_ERR_IRQn,0);
+	UART0->C2 |= UART_C2_TIE_MASK;
+
 }
 
 void disable_UART_int(){
-	NVIC_DisableIRQ(UART0_RX_TX_IRQn);
-	NVIC_DisableIRQ(UART0_ERR_IRQn);
+
+	UART0->C2 &= ~UART_C2_TIE_MASK;
 }
 
 
@@ -178,4 +184,5 @@ char retreiveInput(){
 	else{
 		newInput = '\0';
 	}
+	return newInput;
 }
