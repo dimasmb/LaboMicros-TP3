@@ -48,16 +48,16 @@ void App_Init (void)
 	//DAC_Init();
 	ADC_Init(adc);
 	UART_Init (1200, 2);
-
+	//delayLoop(1000);
 
 }
-uint8_t array[1000];
 
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
-	static char newch[1000];
+	static char newch[10000];
 	static int i = 0;
+
 		if (!inputEmpty()){
 			newch[i] = retreiveInput();
 			//UART_Send_Data(&newch, 1);
@@ -65,7 +65,6 @@ void App_Run (void)
 			Tx_Fsk(prueba);
 			i++;
 		}
-	int juan=0;
 }
 
 
@@ -74,11 +73,11 @@ void App_Run (void)
                         LOCAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-
 static void delayLoop(uint32_t veces)
 {
     while (veces--);
 }
+
 
 /*******************************************************************************
  ******************************************************************************/

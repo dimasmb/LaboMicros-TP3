@@ -18,7 +18,7 @@ int insertChar(char data){
     if(dist>0){
         cirBuff[inPointer]=data;
         dist--;
-        if(inPointer>=(BUFFSIZE-1)){
+        if(inPointer>=(BUFFSIZE-1)){	//si se paso de rosca, reinicio el puntero por donde encolo.
             inPointer=0;
         }else{
             inPointer++;

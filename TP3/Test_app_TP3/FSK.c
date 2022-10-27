@@ -117,7 +117,7 @@ void Tx_Fsk(uint16_t data){
     	uint8_t datanw=(data>>(FSKBITS-i))&0x01;
         insertChar(datanw);
     }
-    dataIn+=11;
+    dataIn+=12;
 
 }
 uint8_t isRxDataFull(void){
@@ -151,16 +151,16 @@ void fsk_callback (void){
     if(SinePointer>=MAXPTR){
         SinePointer=0;
         if(!isHighFreq && dataIn){
-            dataIn--;
+        	dataIn--;
             if(dataIn){
                 currBit=getChar();
             }else{
             	currBit=1;
             }
         }
-        else if(isHighFreq>=20){
-            dataIn--;
+        else if(isHighFreq>=20 && dataIn){
             isHighFreq=0;
+            dataIn--;
             if(dataIn){
                 currBit=getChar();
             } else{
