@@ -1,43 +1,47 @@
 #include "BufferCirc.h"
 
 
-int dist=BUFFSIZE-1;
-int outPointer=0;
-int inPointer=0;
-char cirBuff[BUFFSIZE];
 
-void clearBuff(void){
+int isBuffEmpty(circBuffer_t *B){
+    int result=1;
+    if((B->outPtr)-(B->inPtr))
+        result=0;
+    return result;
+
+}
+
+
+void clearBuff(circBuffer_t *B){
 
     int i=0;
-    for (i=0;i<BUFFSIZE;i++){
-        cirBuff[i]=0;
+    for (i=0;i<(B->buffSize);i++){
+        B->Buffer[i]=0;
     }
 }
 
-int insertChar(char data){
-    if(dist>0){
-        cirBuff[inPointer]=data;
-        dist--;
-        if(inPointer>=(BUFFSIZE-1)){
-            inPointer=0;
+int insertData(circBuffer_t *B,DATATYPE data){
+    if((B->d)>0){
+        B->Buffer[B->inPtr]=data;
+        (B->d)--;
+        if((B->inPtr)>=((B->buffSize)-1)){
+            B->inPtr=0;
         }else{
-            inPointer++;
+            (B->inPtr)++;
         }
     return 1;
     }
     return 0;
-   
 }
 
-char getChar(){
-    char result=0;
-    if(outPointer-inPointer){
-        dist++;
-        result=cirBuff[outPointer];
-        if(outPointer>=(BUFFSIZE-1)){
-            outPointer=0;
+DATATYPE getData(circBuffer_t *B){
+	DATATYPE result=0;
+    if((B->outPtr)-(B->inPtr)){
+        (B->d)++;
+        result=B->Buffer[B->outPtr];
+        if((B->outPtr)>=((B->buffSize)-1)){
+            B->outPtr=0;
         }else{
-            outPointer++;
+            (B->outPtr)++;
         }
     }
     return result;
