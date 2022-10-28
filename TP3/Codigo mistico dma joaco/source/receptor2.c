@@ -43,7 +43,7 @@ void receptor2_init(){
 void receptor_2_poll(){
 
 
-		//DMA0->TCD[0].CSR &= DMA_CSR_DONE_MASK;
+	int var = (DMA0->TCD[0].CSR) & DMA_CSR_DONE_MASK;
 	newmed_process();
 	if(inPointer!=outPointer){
 		newbit_process();
