@@ -139,7 +139,6 @@ FTMData_t   FTM_GetCounter 					 (FTM_t, FTMChannel_t);
 void 		FTM_SetInterruptMode   			 (FTM_t, FTMChannel_t, bool);
 bool 		FTM_IsInterruptPending 			 (FTM_t, FTMChannel_t);
 void 		FTM_ClearInterruptFlag 			 (FTM_t, FTMChannel_t);
-void FTM_DmaMode (FTM_t ftm, FTMChannel_t channel, bool dma_mode);
 
 /*******************************************************************************
  ******************************************************************************/
