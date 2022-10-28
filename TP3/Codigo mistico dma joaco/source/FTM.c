@@ -48,10 +48,10 @@ enum{
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-void CH_Init(FTMModule_t ftm, int channel);
-void IC_Init(FTM_t ftm, int channel);
-void OC_Init(FTM_t ftm, int channel);
-void PWM_Init(FTM_t ftm, int channel);
+void CH_Init(FTMModule_t, FTMChannel_t);
+void IC_Init(FTM_t ftm, FTMChannel_t channel, FTMConfig_t config);
+void OC_Init(FTM_t, FTMChannel_t, FTMConfig_t);
+void PWM_Init(FTM_t, FTMChannel_t, FTMConfig_t);
 void PWM_ISR(void);
 
 /*******************************************************************************
@@ -74,7 +74,7 @@ static uint16_t PWM_duty    = 1000;
 /*******************************
  * INICIALIZADOR GLOBAL
 *****************************/
-void FTM_Init (FTMModule_t module, FTMMode_t mode, int channel)
+void FTM_Init (FTMModule_t module, FTMChannel_t channel, FTMConfig_t config)
 {
 	static FTM_t mod;
 	switch (module)
@@ -114,16 +114,16 @@ void FTM_Init (FTMModule_t module, FTMMode_t mode, int channel)
 
 	CH_Init(module, channel);
 
-	switch(mode)
+	switch(config.mode)
 	{
 		case FTM_mInputCapture:
-			IC_Init(mod, channel);
+			IC_Init(mod, channel, config);
 			break;
 		case FTM_mOutputCompare:
-			OC_Init(mod, channel);
+			OC_Init(mod, channel, config);
 			break;
 		case FTM_mPulseWidthModulation:
-			PWM_Init(mod, channel);
+			PWM_Init(mod, channel, config);
 			break;
 
 	}
@@ -274,7 +274,7 @@ void FTM_ClearInterruptFlag (FTM_t ftm, FTMChannel_t channel)
 /**********************************
 * INICIALIZADORES
 ******************/
-void CH_Init(FTMModule_t ftm, int channel)
+void CH_Init(FTMModule_t ftm, FTMChannel_t channel)
 {
 	int port;
 	int pin;
@@ -372,33 +372,31 @@ void CH_Init(FTMModule_t ftm, int channel)
 		default:
 			break;
 	}
-}
-
-void PWM_Init (FTM_t ftm, int channel)
+}void PWM_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
-	//Prescaler: Bus clock (50MHz)/32
-	FTM_SetPrescaler(ftm, FTM_PSC_x16);
+	//Prescaler: Bus clock (50MHz)/4
+	FTM_SetPrescaler(ftm, config.prescale);//FTM_PSC_x4);
 
 	//Initial value = 0 ; counter = 0 (inicializo) ; max_cont = PWM_modulus
-	FTM_SetModulus(ftm, PWM_modulus);
+	FTM_SetModulus(ftm, config.modulus);// PWM_modulus);
 
 	//Habilito interrupciones de overflow
-	FTM_SetOverflowMode(ftm, true);
+	//FTM_SetOverflowMode(ftm, true);
 
 	//Pongo cierto canal como PWM
 	FTM_SetWorkingMode(ftm, channel, FTM_mPulseWidthModulation);			// MSA  / B
 
 	//High-true pulses (clear Output on match)
-	FTM_SetPulseWidthModulationLogic(ftm, channel, FTM_lAssertedHigh);   // ELSA / B
+	FTM_SetPulseWidthModulationLogic(ftm, channel, config.logic);//FTM_lAssertedHigh);   // ELSA / B
 
 	//"comparator" value = PWM_duty (donde hace el clear)
-	FTM_SetCounter(ftm, channel, PWM_duty);
+	FTM_SetCounter(ftm, channel, (FTMData_t)(config.modulus/2));
 
 	//Inicio el clock
 	FTM_StartClock(ftm);
 }
 
-void OC_Init (FTM_t ftm, int channel)
+void OC_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
 
 	//  Set up timer for OC interrupt
@@ -424,7 +422,7 @@ void OC_Init (FTM_t ftm, int channel)
 	FTM_StartClock(ftm); //Select BusClk
 }
 
-void IC_Init (FTM_t ftm, int channel)
+void IC_Init (FTM_t ftm, FTMChannel_t channel, FTMConfig_t config)
 {
 
 	//  Enable Timer advanced modes (FTMEN=1)
@@ -433,17 +431,14 @@ void IC_Init (FTM_t ftm, int channel)
 
 	//--- medidor
 
-
-
 	FTM_SetPrescaler(ftm, FTM_PSC_x32);	 				// Set Prescaler = divx32
-	ftm->CNTIN=0x0000;				  		  				// Free running
-	ftm->MOD=0xFFFF;
+	FTM1->CNTIN=0x0000;				  		  				// Free running
+	FTM1->MOD=0xFFFF;
 	FTM_SetWorkingMode(ftm, channel, FTM_mInputCapture);   // Select IC Function
 	FTM_SetInputCaptureEdge (ftm, channel, FTM_eEither);  // Capture on both edges
 	FTM_SetInterruptMode (ftm, channel, true);            // Enable interrupts
 	FTM_StartClock(ftm);                                  // Select BusClk
 }
-
 
 void FTM1_IRQHandler(void){
 

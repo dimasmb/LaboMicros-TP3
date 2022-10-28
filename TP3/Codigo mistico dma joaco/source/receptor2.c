@@ -25,7 +25,9 @@ static uint16_t new_IC_measurement = 0;
 void receptor2_init(){
 	UART_Init(1200, 2);
 	CMP_INIT();
-	FTM_Init(FTM_1, FTM_mInputCapture, FTM_CH_0);
+	FTMConfig_t config;
+	config.mode = FTM_mInputCapture;
+	FTM_Init(FTM_1, FTM_CH_0, config);
 	SIM->SOPT4 |= SIM_SOPT4_FTM1CH0SRC(1);
 	DMAConfig_t my_dma_config;
 	my_dma_config.sourceChannel = sFTM1_CH0;

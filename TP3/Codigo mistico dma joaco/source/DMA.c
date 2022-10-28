@@ -67,9 +67,9 @@ void DMA_init(uint8_t channel, DMAConfig_t config)
 	/* Enable the interrupts for the channel 0. */
 
 	/* Clear all the pending events. */
-	NVIC_ClearPendingIRQ(DMA0_IRQn);
+	//NVIC_ClearPendingIRQ(DMA0_IRQn);
 	/* Enable the DMA interrupts. */
-	 NVIC_EnableIRQ(DMA0_IRQn);
+	 //NVIC_EnableIRQ(DMA0_IRQn);
 
 	/// ============= INIT TCD0 ===================//
 	/* Set memory address for source and destination. */
@@ -106,7 +106,15 @@ void DMA_init(uint8_t channel, DMAConfig_t config)
 	//DMA0->TCD[channel].CSR |= DMA_CSR_INTMAJOR_MASK;
 
 	/* Enable request signal for channel 0. */
-	DMA0->ERQ = DMA_ERQ_ERQ0_MASK;
+	switch(channel)
+		{
+			case 0:
+				DMA0->ERQ = DMA_ERQ_ERQ0_MASK;
+				break;
+			case 1:
+				DMA0->ERQ = DMA_ERQ_ERQ1_MASK;
+				break;
+		}
 
 	//hw_EnableInterrupts();
 	//DMA0->TCD[channel].CSR |= DMA_CSR_START_MASK;
@@ -123,14 +131,17 @@ void Enable_MajorInt(uint8_t channel)
  *******************************************************************************
  ******************************************************************************/
 
+void SetSourceAddr(uint8_t channel, uint32_t address)
+{
+  DMA0->TCD[channel].SADDR = (uint32_t)(address);
+}
 
-
-
+/*
 void DMA_Error_IRQHandler(void){
     DMA0->CERR = 0;
 }
 
 void DMA0_IRQHandler(void){
 
-}
+}*/
  

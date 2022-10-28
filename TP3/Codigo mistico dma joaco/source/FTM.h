@@ -102,8 +102,6 @@ typedef struct
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
-void CH_Init(FTMModule_t ftm, int channel);
-void IC_Init (FTM_t ftm, int channel);
 
 
 //__ISR__ 	FTM0_IRQHandler					 (void);
@@ -111,7 +109,7 @@ void IC_Init (FTM_t ftm, int channel);
 //__ISR__ 	FTM2_IRQHandler					 (void);
 //__ISR__ 	FTM3_IRQHandler					 (void);
 
-void 		FTM_Init 						 (FTMModule_t module, FTMMode_t mode, int channel);
+void FTM_Init (FTMModule_t module, FTMChannel_t channel, FTMConfig_t config);
 
 void        FTM_SetPrescaler 				 (FTM_t, FTM_Prescal_t);
 void     	FTM_SetModulus 					 (FTM_t, FTMData_t);

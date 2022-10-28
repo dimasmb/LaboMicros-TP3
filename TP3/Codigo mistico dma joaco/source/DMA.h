@@ -78,6 +78,7 @@ typedef struct
 */
 void DMA_Init(uint8_t channel, DMAConfig_t config);
 
+void SetSourceAddr(uint8_t channel, uint32_t address);
 
 /*******************************************************************************
  ******************************************************************************/
