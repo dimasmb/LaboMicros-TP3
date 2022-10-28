@@ -1,23 +1,55 @@
 #include "receptor2.h"
 #include "uart_drv.h"
+#include "DMA.h"
 void CMP_INIT();
 void IC_ISR(FTM_Type* ftm, int channel);
 
-static char newbit = 0;
+//static char newbit = 0;
 
-#define BUFFSIZE 100
+#define BUFFSIZE 1000
 
 
 int insertChar(char);
 char getChar();
 void clearBuff(void);
+void newbit_process();
+void newmed_process();
+
+static int dist=BUFFSIZE-1;
+static int outPointer=0;
+static int inPointer=0;
+static char cirBuff[BUFFSIZE];
+static uint16_t new_IC_measurement = 0;
+
 
 void receptor2_init(){
-	UART_Init(1200, 0);
+	UART_Init(1200, 2);
 	CMP_INIT();
 	FTM_Init(FTM_1, FTM_mInputCapture, FTM_CH_0);
 	SIM->SOPT4 |= SIM_SOPT4_FTM1CH0SRC(1);
+	DMAConfig_t my_dma_config;
+	my_dma_config.sourceChannel = sFTM1_CH0;
+	my_dma_config.sourceAddr = &(FTM1->CONTROLS[0].CnV); //CHEQUEAR DE NUEVO warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+	my_dma_config.cant = 1;
+	my_dma_config.destAddr = &new_IC_measurement;
+	my_dma_config.sourceOff = 0;
+	my_dma_config.destOff = 0;
+	FTM_DmaMode(FTM1, FTM_CH_0, true);
+	FTM_SetInterruptMode(FTM1, FTM_CH_0, true);
+	DMA_init(0, my_dma_config);
+
 }
+
+void receptor_2_poll(){
+
+
+		//DMA0->TCD[0].CSR &= DMA_CSR_DONE_MASK;
+	newmed_process();
+	if(inPointer!=outPointer){
+		newbit_process();
+	}
+}
+
 
 typedef enum
 {
@@ -26,52 +58,80 @@ typedef enum
 	state_start
 } readmachine_state;
 
+//static int debugarr[150];
+//static int i = 0;
 
-void receptor_2_poll(){
-
+void newbit_process() {
 	static readmachine_state state = state_start;
 	static char char2send = 0;
 	static char counter = 0;
 	static char start_counter = 0;
-	static char auxchar = 0;
 
-	if(newbit){
-		newbit = 0;
-
-		char bit = getChar();
-
-		if (state == state_idle && bit==0){
-					state = state_reading;
-			}
-		else if (state== state_reading){
-
-			counter++;
-			if (counter<9){
-				char2send *= 2;
-				char2send += bit;
-			}
-			else if (counter == 10){
-
-
-				UART_Send_Data(&char2send, 1);
-				char2send=0;
-
-				counter=0;
+	//newbit = 0;
+	char bit = getChar();
+	if (state == state_idle && bit == 0) {
+		state = state_reading;
+	} else if (state == state_reading) {
+		counter++;
+		if (counter < 9) {
+			char2send *= 2;
+			char2send += bit;
+		} else if (counter == 10) {
+			UART_Send_Data(&char2send, 1);
+			char2send = 0;
+			counter = 0;
+			state = state_idle;
+		}
+	} else if (state == state_start) {
+		if (bit == 1) {
+			start_counter++;
+			if (start_counter == 2) {
 				state = state_idle;
 			}
+		} else {
+			start_counter = 0;
 		}
-		else if (state == state_start){
-				if(bit==1){
-					start_counter++;
-					if (start_counter==2){
-						state = state_idle;
-					}
-				}
-				else {
-					start_counter = 0;
-				}
+	}
+}
 
+
+
+void newmed_process(){
+
+	static uint16_t med1,med2,med;
+	static uint8_t  state = 0;
+	static char zero_counter = 0;
+	static char one_counter = 0;
+
+
+	if(state==1)
+	{
+		med1 = med2;
+		med2 = new_IC_measurement;
+
+		med=med2-med1;
+
+		/*if (med>50){
+			debugarr[i] = med;
+			i++;
+		}*/
+
+		if (med>475 && ((++one_counter)==2)){
+			one_counter=0;
+			//newbit=1;
+
+			insertChar(1);
 		}
+		else if (med>50 && 475>med && ((++zero_counter)==4)){
+			zero_counter=0;
+			//newbit=1;
+			insertChar(0);
+		}
+	}
+	else
+	{
+		med2=new_IC_measurement;
+		state=1;
 	}
 }
 
@@ -153,59 +213,6 @@ void CMP_INIT() {
 
 
 
-__ISR__ FTM1_IRQHandler(void)
-{
-	//chequear en que modo estoy
-	//chequear que flag se prendio (OVF o channel)
-	//bajar el flag
-	//operar
-	IC_ISR(FTM1, 0);
-}
-
-
-void IC_ISR(FTM_Type* ftm, int channel) //FTM3 CH5 PTC9 as IC
-{
-	static uint16_t med1,med2,med;
-	static uint8_t  state = 0;
-	static char zero_counter = 0;
-	static char one_counter = 0;
-
-	FTM_ClearInterruptFlag (ftm, channel);
-
-
-	if(state==1)
-	{
-		med1 = med2;
-		med2=FTM_GetCounter (ftm, channel);
-
-		med=med2-med1;
-
-
-			if (med>475 && ((++one_counter)==2)){
-				one_counter=0;
-				newbit=1;
-				insertChar(1);
-			}
-			else if (med>50 && 475>med && ((++zero_counter)==4)){
-				zero_counter=0;
-				newbit=1;
-				insertChar(0);
-			}
-	}
-	else
-	{
-		med1=FTM_GetCounter (ftm, channel); //
-		state=1;
-	}
-
-
-}
-
-
-static int dist=BUFFSIZE-1;
-static int outPointer=0;
-static int inPointer=0;
-static char cirBuff[BUFFSIZE];
 
 void clearBuff(void){
 
@@ -244,6 +251,8 @@ char getChar(){
     return result;
 
 }
+
+
 
 
 

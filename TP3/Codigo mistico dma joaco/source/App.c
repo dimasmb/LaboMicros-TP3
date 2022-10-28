@@ -46,11 +46,6 @@ void App_Init (void)
 void App_Run (void)
 {
 	receptor_2_poll();
-	/*char newch = 'f';
-	if (!inputEmpty()){
-		newch = retreiveInput();
-		UART_Send_Data(&newch, 1);
-	}*/
 }
 
 

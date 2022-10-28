@@ -235,6 +235,12 @@ FTMData_t FTM_GetCounter (FTM_t ftm, FTMChannel_t channel)
 	return ftm->CONTROLS[channel].CnV & FTM_CnV_VAL_MASK;
 }
 
+void FTM_DmaMode (FTM_t ftm, FTMChannel_t channel, bool dma_mode)
+{
+	ftm->CONTROLS[channel].CnSC = (ftm->CONTROLS[channel].CnSC & ~(FTM_CnSC_DMA_MASK)) |
+			                      (FTM_CnSC_DMA(dma_mode));
+}
+
 void FTM_SetInterruptMode (FTM_t ftm, FTMChannel_t channel, bool mode)
 {
 	ftm->CONTROLS[channel].CnSC = (ftm->CONTROLS[channel].CnSC & ~FTM_CnSC_CHIE_MASK) | FTM_CnSC_CHIE(mode);
@@ -438,4 +444,8 @@ void IC_Init (FTM_t ftm, int channel)
 	FTM_StartClock(ftm);                                  // Select BusClk
 }
 
+
+void FTM1_IRQHandler(void){
+
+}
 
