@@ -29,7 +29,7 @@ void receptor2_init(){
 	SIM->SOPT4 |= SIM_SOPT4_FTM1CH0SRC(1);
 	DMAConfig_t my_dma_config;
 	my_dma_config.sourceChannel = sFTM1_CH0;
-	my_dma_config.sourceAddr = &(FTM1->CONTROLS[0].CnV); //CHEQUEAR DE NUEVO warning: assignment makes integer from pointer without a cast [-Wint-conversion]
+	my_dma_config.sourceAddr = &(FTM1->CONTROLS[0].CnV);
 	my_dma_config.cant = 1;
 	my_dma_config.destAddr = &new_IC_measurement;
 	my_dma_config.sourceOff = 0;
@@ -44,6 +44,7 @@ void receptor_2_poll(){
 
 
 	int var = (DMA0->TCD[0].CSR) & DMA_CSR_DONE_MASK;
+
 	newmed_process();
 	if(inPointer!=outPointer){
 		newbit_process();
@@ -77,7 +78,13 @@ void newbit_process() {
 			char2send *= 2;
 			char2send += bit;
 		} else if (counter == 10) {
-			UART_Send_Data(&char2send, 1);
+			char aux = 0;
+			for(int e=0; e<8;e++){
+				aux*=2;
+				aux += 1&(char2send>>e);
+
+			}
+			UART_Send_Data(&aux, 1);
 			char2send = 0;
 			counter = 0;
 			state = state_idle;
