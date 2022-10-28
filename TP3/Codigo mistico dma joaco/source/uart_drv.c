@@ -1,4 +1,5 @@
 #include "uart_drv.h"
+#include "gpio.h"
 #include <stdio.h>
 
 #define UART_HAL_DEFAULT_BAUDRATE 1000
@@ -81,7 +82,7 @@ void disable_UART_int(){
 
 __ISR__ UART0_RX_TX_IRQHandler (void)
 {
-
+	SetIntPin(true);
 
 	if(((UART0->S1)& UART_S1_RDRF_MASK)){
 		 char temp_ch=UART0->D;
@@ -110,11 +111,12 @@ __ISR__ UART0_RX_TX_IRQHandler (void)
 
 		}
 	}
+	SetIntPin(false);
 }
 
 __ISR__ UART0_ERR_IRQHandler(void)
 {
-
+	SetIntPin(true);
 
 	if(outBuffer.input_index != 0){
 		outBuffer.input_index--;
@@ -125,6 +127,7 @@ __ISR__ UART0_ERR_IRQHandler(void)
 	outBuffer.distance++;
 	enable_UART_int();
 
+	SetIntPin(false);
 }
 
 

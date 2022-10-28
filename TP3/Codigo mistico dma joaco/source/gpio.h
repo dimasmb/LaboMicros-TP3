@@ -1,7 +1,7 @@
 /***************************************************************************//**
   @file     gpio.h
   @brief    Simple GPIO Pin services, similar to Arduino
-  @author   Nicolás Magliola
+  @author   Nicol�s Magliola
  ******************************************************************************/
 
 #ifndef _GPIO_H_
@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "MK64F12.H"
 
 
 /*******************************************************************************
@@ -51,6 +52,29 @@ enum { PA, PB, PC, PD, PE };
  ******************************************************************************/
 
 typedef uint8_t pin_t;
+typedef void (*punt_func_t)(void);	//puntero a funciones, me va a servir para las irqs
+
+typedef struct
+{
+	PORT_Type* port;
+	int port_num;
+	int pin_num;
+	GPIO_Type* gpio;
+}MyPortPin;
+
+// IRQ modes
+enum { 					//
+    GPIO_IRQ_MODE_DISABLE,//00->0
+    GPIO_IRQ_DMA_RISING,//1
+    GPIO_IRQ_DMA_FALLING,//2
+    GPIO_IRQ_DMA_EITHER,//3
+    GPIO_IRQ_DISASSERTED,//4->8
+    GPIO_IRQ_MODE_RISING_EDGE,//5->9
+    GPIO_IRQ_MODE_FALLING_EDGE,//6->10
+    GPIO_IRQ_MODE_BOTH_EDGES,//7->11
+    GPIO_IRQ_ASSERTED,//8->12
+    GPIO_IRQ_CANT_MODES=15,//04-> 15
+};
 
 
 /*******************************************************************************
@@ -67,6 +91,15 @@ typedef uint8_t pin_t;
  * @param mode INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.
  */
 void gpioMode (pin_t pin, uint8_t mode);
+
+/**
+ * @brief Configures how the pin reacts when an IRQ event ocurrs
+ * @param pin the pin whose IRQ mode you wish to set (according PORTNUM2PIN)
+ * @param irqMode disable, risingEdge, fallingEdge or bothEdges
+ * @param irqFun function to call on pin event
+ * @return Registration succeed
+ */
+bool gpioIRQ(pin_t pin, int tipo, punt_func_t callbacks);		//le paso ademas , un puntero a funcion que me permite enlazar la funcion
 
 /**
  * @brief Write a HIGH or a LOW value to a digital pin
@@ -89,6 +122,8 @@ void gpioToggle (pin_t pin);
 bool gpioRead (pin_t pin);
 
 
+void IntPin_Init(void);
+void SetIntPin(bool val);
 /*******************************************************************************
  ******************************************************************************/
 
