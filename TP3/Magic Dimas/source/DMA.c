@@ -98,8 +98,15 @@ void DMA_Init(uint8_t channel, DMAConfig_t config)
 	/* Setup control and status register. */
 
 	/* Enable request signal for channel 0. */
-	DMA0->ERQ = DMA_ERQ_ERQ1_MASK;
-	//DMA0->SERQ = DMA_SERQ_SERQ(1);
+	switch(channel)
+	{
+		case 0:
+			DMA0->ERQ = DMA_ERQ_ERQ0_MASK;
+			break;
+		case 1:
+			DMA0->ERQ = DMA_ERQ_ERQ1_MASK;
+			break;
+	}
 
 //hw_EnableInterrupts();
 //DMA0->TCD[channel].CSR |= DMA_CSR_START_MASK;

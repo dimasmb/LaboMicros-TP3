@@ -122,7 +122,12 @@ void SetMarkSpace(bool ms)
 
 bool IsPeriodDone(void)
 {
-  return (DMA0->TCD[DMA_CHANNEL].CSR & DMA_CSR_DONE_MASK);
+	if(DMA0->TCD[DMA_CHANNEL].CSR & DMA_CSR_DONE_MASK)
+	{
+		DMA0->TCD[DMA_CHANNEL].CSR &= ~DMA_CSR_DONE_MASK;
+		return true;
+	}
+	else return false;
 }
 
 /*******************************************************************************
