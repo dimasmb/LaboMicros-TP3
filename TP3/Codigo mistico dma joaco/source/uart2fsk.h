@@ -1,15 +1,16 @@
 /***************************************************************************//**
-  @file     App.c
-  @brief    Application functions
-  @author   Nicolás Magliola
+  @file     uart_fsk.h
+  @brief    Funciones para modular FSK
+  @author   Dimas Bosch
  ******************************************************************************/
+
+#ifndef _UART_FSK_H_
+#define _UART_FSK_H_
 
 /*******************************************************************************
  * INCLUDE HEADER FILES
  ******************************************************************************/
-
-#include "board.h"
-#include "receptor2.h"
+#include <stdint.h>
 
 
 /*******************************************************************************
@@ -17,49 +18,32 @@
  ******************************************************************************/
 
 
+
 /*******************************************************************************
- * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
+ * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
 
-
 /*******************************************************************************
- *******************************************************************************
-                        GLOBAL FUNCTION DEFINITIONS
- *******************************************************************************
+ * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
 
-/* Función que se llama 1 vez, al comienzo del programa */
-
-void App_Init (void)
-{
-	hw_DisableInterrupts();
-	receptor2_init();
-	PWM_1200_Init();
-	hw_EnableInterrupts();
-
-
-}
-
-
-
-
-/* Función que se llama constantemente en un ciclo infinito */
-void App_Run (void)
-{
-	receptor_2_poll();
-	encoder_poll();
-}
+// +ej: extern unsigned int anio_actual;+
 
 
 /*******************************************************************************
- *******************************************************************************
-                        LOCAL FUNCTION DEFINITIONS
- *******************************************************************************
+ * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
 
-
+/**
+ * @brief TODO: Devuelve un 16 bits donde los 11LSB (0000 0SDD DDDD DDPT) 8-Odd-1 con lo datos en LSB first
+ * @param datos char recibido por uart
+ * @return Estructura FSK_t correspondiente
+*/
+uint16_t uart_2_fsk(uint8_t datos);
 
 
 /*******************************************************************************
  ******************************************************************************/
+
+#endif // _TEMPLATE_H_

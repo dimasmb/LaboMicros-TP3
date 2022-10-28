@@ -24,7 +24,7 @@
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-void process_uart();
+
 
 /*******************************************************************************
  *******************************************************************************
@@ -44,25 +44,7 @@ void App_Init (void)
 
 void App_Run (void)
 {
-	process_uart();
-	static int first_pass=1;
-	if (!first_pass){
-		if(IsPeriodDone()){
-			if (bufferEmpty()){
-				SetMarkSpace(true); // si no tengo nada en el buffer de UART mando idle
-			}
-			else{
 
-				SetMarkSpace(getChar());
-			}
-
-		}
-	}
-	else{
-		SetMarkSpace(true);
-		first_pass = 0;
-
-	}
 
 
 }
@@ -77,6 +59,32 @@ void App_Run (void)
 
 /*******************************************************************************
  ******************************************************************************/
+
+void process_uart();
+
+void encoder_poll{
+		
+	process_uart();
+	static int first_pass = 1;
+	if (!first_pass) {
+		if (IsPeriodDone()) {
+			if (bufferEmpty()) {
+				SetMarkSpace(true); // si no tengo nada en el buffer de UART mando idle
+			}
+			else {
+
+				SetMarkSpace(getChar());
+			}
+
+		}
+	}
+	else {
+		SetMarkSpace(true);
+		first_pass = 0;
+
+	}
+}
+
 
 void process_uart(){
 	if (!inputEmpty()){

@@ -55,7 +55,7 @@
                         GLOBAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-void DMA_init(uint8_t channel, DMAConfig_t config)
+void DMA_Init(uint8_t channel, DMAConfig_t config)
 {
   /* Enable the clock for the eDMA and the DMAMUX. */
 	SIM->SCGC7 |= SIM_SCGC7_DMA_MASK;

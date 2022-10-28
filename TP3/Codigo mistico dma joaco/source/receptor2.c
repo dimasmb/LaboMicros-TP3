@@ -9,9 +9,9 @@ void IC_ISR(FTM_Type* ftm, int channel);
 #define BUFFSIZE 1000
 
 
-int insertChar(char);
-char getChar();
-void clearBuff(void);
+int insertChar_rx(char);
+char getCharr_rx();
+void clearBuff_2(void);
 void newbit_process();
 void newmed_process();
 
@@ -38,7 +38,7 @@ void receptor2_init(){
 	my_dma_config.destOff = 0;
 	FTM_DmaMode(FTM1, FTM_CH_0, true);
 	FTM_SetInterruptMode(FTM1, FTM_CH_0, true);
-	DMA_init(0, my_dma_config);
+	DMA_Init(0, my_dma_config);
 
 }
 
@@ -71,7 +71,7 @@ void newbit_process() {
 	static char start_counter = 0;
 
 	//newbit = 0;
-	char bit = getChar();
+	char bit = getCharr_rx();
 	if (state == state_idle && bit == 0) {
 		state = state_reading;
 	} else if (state == state_reading) {
@@ -129,12 +129,12 @@ void newmed_process(){
 			one_counter=0;
 			//newbit=1;
 
-			insertChar(1);
+			insertChar_rx(1);
 		}
 		else if (med>50 && 475>med && ((++zero_counter)==4)){
 			zero_counter=0;
 			//newbit=1;
-			insertChar(0);
+			insertChar_rx(0);
 		}
 	}
 	else
@@ -223,7 +223,7 @@ void CMP_INIT() {
 
 
 
-void clearBuff(void){
+void clearBuff_2(void){
 
     int i=0;
     for (i=0;i<BUFFSIZE;i++){
@@ -231,7 +231,7 @@ void clearBuff(void){
     }
 }
 
-int insertChar(char data){
+int insertChar_rx(char data){
     if(dist>0){
         cirBuff[inPointer]=data;
         dist--;
@@ -246,7 +246,7 @@ int insertChar(char data){
 
 }
 
-char getChar(){
+char getCharr_rx(){
     char result=0;
     if(outPointer-inPointer){
         dist++;
