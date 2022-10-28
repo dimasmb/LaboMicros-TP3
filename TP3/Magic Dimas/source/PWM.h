@@ -46,14 +46,8 @@ typedef enum
 */
 void PWM_1200_Init(void);
 
-/**
- * @brief TODO: setea la multiplicación
- * @param step multiplicadr de frecuencia
-*/
-void SetFrecMult(FrecMult_t step);
 
 void SetMarkSpace(bool ms);
-bool transfer_done();
 
 /**
  * @brief TODO: genera una PWM para generar una senoidal de 1200Hz por FTM0_CH0

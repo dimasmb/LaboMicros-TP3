@@ -25,11 +25,13 @@ void main (void)
   hw_Init();
   PWM_1200_Init();
   //SetFrecMult(Mult_x2);
+  bool flag = true;
   while(1)
   {
     if(IsPeriodDone())
     {
-      SetMarkSpace(true);
+      SetMarkSpace(flag);
+      flag = !flag;
     }
   }
 }

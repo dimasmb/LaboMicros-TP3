@@ -66,12 +66,6 @@ void DMA_Init(uint8_t channel, DMAConfig_t config)
 
 	/* Enable the interrupts for the channel 0. */
 
-	/* Clear all the pending events. */
-	// NVIC_ClearPendingIRQ(DMA0_IRQn);
-	/* Enable the DMA interrupts. */
-	// NVIC_EnableIRQ(DMA0_IRQn);
-
-
 	/// ============= INIT TCD0 ===================//
 	/* Set memory address for source and destination. */
 	DMA0->TCD[channel].SADDR = (uint32_t)(config.sourceAddr);				   //List of Duties
@@ -98,12 +92,10 @@ void DMA_Init(uint8_t channel, DMAConfig_t config)
 	DMA0->TCD[channel].SLAST = -(config.cant * (sizeof(uint16_t)));
 
 
-  /* DLASTSGA DLAST Scatter and Gatter */
-  DMA0->TCD[channel].DLAST_SGA = 0x00;
+	/* DLASTSGA DLAST Scatter and Gatter */
+	DMA0->TCD[channel].DLAST_SGA = 0x00;
 
 	/* Setup control and status register. */
-
-	//DMA0->TCD[0].CSR = DMA_CSR_INTMAJOR_MASK;	//Enable Major Interrupt.
 
 	/* Enable request signal for channel 0. */
 	DMA0->ERQ = DMA_ERQ_ERQ1_MASK;
